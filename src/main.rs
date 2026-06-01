@@ -36,8 +36,8 @@ pub extern "C" fn rust_main() -> ! {
     // let da = unsafe { *(&a as *const MyEnum as *const u8) };
     // let db = unsafe { *(&b as *const MyEnum as *const u8) };
 
-    if a == MyEnum::A {
-        semihosting_exit(0)
+    if a == MyEnum::B {
+        semihosting_exit(0) // reached, error
     } else {
         semihosting_exit(1)
     }
