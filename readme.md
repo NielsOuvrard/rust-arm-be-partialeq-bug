@@ -38,32 +38,6 @@ still triggers it.
 
 ---
 
-## Root cause
-
-At `opt-level=0`, the compiler does not inline small functions across crate
-boundaries. The derived `PartialEq::eq` becomes a real function call:
-
-```
-your crate  →  call  →  core::cmp::PartialEq::eq
-```
-
-This call crosses an ABI boundary between two separately compiled crates: your code
-and `core` (built by `-Z build-std`). On big-endian ARM, there is a mismatch in how
-small integer arguments (the enum discriminant) are positioned in a register at that
-boundary — caller and callee disagree on whether the value is in the high or low bits
-of the 32-bit register. The comparison therefore operates on mismatched values and
-returns `true` for inequal inputs.
-
-`match` is immune because it compiles to a direct `CMP` + branch instruction entirely
-within your crate's codegen unit. It never crosses a crate boundary and never touches
-the broken integer-comparison path.
-
-At `opt-level >= 1`, `PartialEq::eq` is inlined at the call site. The ABI boundary
-disappears, the comparison is performed locally with consistent register conventions,
-and the bug does not trigger.
-
----
-
 ## Environment
 
 - **Target:** `armebv7r-none-eabi` (big-endian, `no_std`, bare-metal)
@@ -79,12 +53,6 @@ and the bug does not trigger.
 - `rust-src` component: `rustup component add rust-src --toolchain nightly`
 - QEMU with ARM support: `qemu-system-arm`
 - `rust-lld` linker (ships with the nightly toolchain)
-
-Install the target:
-
-```sh
-rustup target add armebv7r-none-eabi --toolchain nightly
-```
 
 ---
 
