@@ -1,0 +1,8 @@
+{
+    "rust-analyzer.diagnostics.disabled": [
+        "unresolved-macro-call"
+    ],
+    "rust-analyzer.cargo.target": "armebv7r-none-eabi",
+    "rust-analyzer.check.allTargets": false,
+    "rust-analyzer.cargo.allTargets": false
+}

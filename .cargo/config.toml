@@ -1,0 +1,18 @@
+[build]
+target = "armebv7r-none-eabi"
+
+[target.armebv7r-none-eabi]
+linker = "rust-lld"
+runner = ["qemu-system-arm", "-M", "virt", "-cpu", "cortex-a15", "-nographic", "-semihosting-config", "enable=on,target=native", "-kernel"]
+rustflags = ["-C", "link-arg=-Tlink.x"]
+
+[unstable]
+build-std = ["core"]
+build-std-features = ["compiler-builtins-mem"]
+
+# uncomment here and it will correctly works
+# [profile.dev]
+# opt-level = 1   # forces inlining of core comparison shims
+
+# [profile.release]  
+# opt-level = 2
