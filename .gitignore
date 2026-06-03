@@ -1,1 +1,3 @@
 /target
+renode-install/*
+Cargo.lock

@@ -1,23 +1,38 @@
+//! Semihosting hello-world.
+
 #![no_std]
 #![no_main]
 
-use core::arch::global_asm;
-use core::panic::PanicInfo;
+use aarch32_rt::entry;
+use qemu_be_error as _;
+use semihosting::println;
 
-global_asm!(
-    "
-    .section .text._start
-    .global _start
-    .type _start, %function
-_start:
-    ldr sp, =__stack_top
-    bl rust_main
-1:
-    b 1b
-"
-);
+/// The entry-point to the Rust application.
+///
+/// It is called by the start-up.
+#[entry]
+fn my_main() -> ! {
+    qemu_be_error::init();
+    let x = 1.0f64;
+    let y = x * 2.0;
+    println!("Hello, this is semihosting! x = {:0.3}, y = {:0.3}", x, y);
+    qemu_be_error::want_panic();
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+    let a = MyEnum::A;
+    let _b = MyEnum::B;
+
+    let cat;
+    if a == MyEnum::B {
+        cat = "bug";
+    } else {
+        cat = "not bug";
+    }
+    println!("{cat}");
+
+    panic!("I am an example panic");
+}
+
+#[derive(PartialEq)]
 #[repr(u8)]
 pub enum MyEnum {
     A,
@@ -26,42 +41,13 @@ pub enum MyEnum {
     D,
 }
 
-#[unsafe(no_mangle)]
-pub extern "C" fn rust_main() -> ! {
+fn funct() -> u32 {
     let a = MyEnum::A;
-    let b = MyEnum::B;
-
-    // with one of these, the test works
-    // even if we uncomment the db one, the comparison of a variable will work
-    // let da = unsafe { *(&a as *const MyEnum as *const u8) };
-    // let db = unsafe { *(&b as *const MyEnum as *const u8) };
+    let _b = MyEnum::B;
 
     if a == MyEnum::B {
-        semihosting_exit(0) // reached, error
+        0
     } else {
-        semihosting_exit(1)
-    }
-
-    // with a match this works
-    /*
-    match a {
-        MyEnum::A => semihosting_exit(0),
-        MyEnum::B => semihosting_exit(1),
-        MyEnum::C => semihosting_exit(2),
-        _ => semihosting_exit(3),
-    }
-    */
-}
-
-#[panic_handler]
-fn panic(_: &PanicInfo) -> ! {
-    semihosting_exit(1)
-}
-
-fn semihosting_exit(code: u32) -> ! {
-    unsafe {
-        let exit_data = [0x20026_u32, code];
-        let args = exit_data.as_ptr();
-        core::arch::asm!("svc 0x123456", in("r0") 0x20_u32, in("r1") args, options(noreturn));
+        1
     }
 }
