@@ -4,13 +4,25 @@
 //!
 //! Copyright (c) Ferrous Systems, 2025
 
+use std::env;
 use std::io::Write;
 
 fn main() {
     arm_targets::process();
     write("memory.x", include_bytes!("memory.x"));
+
+    let target = env::var("TARGET").unwrap();
+    if target == "armebv7r-none-eabi" {
+        write("link.x", include_bytes!("link.x")); // our patched version takes priority
+    }
+
     // Use the cortex-m-rt linker script
     println!("cargo:rustc-link-arg=-Tlink.x");
+
+    if target == "armebv7r-none-eabi" {
+        println!("cargo:rerun-if-changed=link.x");
+        println!("cargo:rustc-link-arg=-nostartfiles");
+    }
 }
 
 fn write(file: &str, contents: &[u8]) {

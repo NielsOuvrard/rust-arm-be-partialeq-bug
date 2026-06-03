@@ -6,17 +6,11 @@ target = "armebv7r-none-eabi"
 
 
 [target.armv7r-none-eabi]
-# change '-mcpu=cortex-r5' to '-mcpu=cortex-r5f' if you use eabi-fpu feature, otherwise
-# qemu-system-arm will lock up
 runner = "qemu-system-arm -machine versatileab -cpu cortex-r5 -semihosting -nographic -audio none -kernel"
 
-# [target.armebv7r-none-eabi]
-# linker = "rust-lld"
-# runner = ["qemu-system-arm", "-M", "versatilepb", "-audio", "none", "-cpu", "cortex-r5", "-nographic", "-nodefaults", "-semihosting", "-d", "guest_errors", "-m", "128M", "-semihosting-config", "enable=on,target=native", "-kernel"]
-# rustflags = [
-#     "-C", "link-arg=-Tlink.x",
-# ]
-# runner = "./renode-run.sh"
+[target.armebv7r-none-eabi]
+linker = "/home/nielsouvrard/gcc-linaro-7.5.0-2019.12-x86_64_armeb-eabi/bin/armeb-eabi-gcc"
+runner = "qemu-system-arm -machine versatileab -cpu cortex-r5 -semihosting -nographic -audio none -kernel"
 
 [unstable]
 build-std = ["core"]

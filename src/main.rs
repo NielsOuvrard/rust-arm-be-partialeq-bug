@@ -7,6 +7,15 @@ use aarch32_rt::entry;
 use qemu_be_error as _;
 use semihosting::println;
 
+#[derive(PartialEq)]
+#[repr(u8)]
+pub enum MyEnum {
+    A,
+    B,
+    C,
+    D,
+}
+
 /// The entry-point to the Rust application.
 ///
 /// It is called by the start-up.
@@ -14,6 +23,7 @@ use semihosting::println;
 fn my_main() -> ! {
     qemu_be_error::init();
     let x = 1.0f64;
+    // or whatever semihosting crate you're using
     let y = x * 2.0;
     println!("Hello, this is semihosting! x = {:0.3}, y = {:0.3}", x, y);
     qemu_be_error::want_panic();
@@ -30,24 +40,4 @@ fn my_main() -> ! {
     println!("{cat}");
 
     panic!("I am an example panic");
-}
-
-#[derive(PartialEq)]
-#[repr(u8)]
-pub enum MyEnum {
-    A,
-    B,
-    C,
-    D,
-}
-
-fn funct() -> u32 {
-    let a = MyEnum::A;
-    let _b = MyEnum::B;
-
-    if a == MyEnum::B {
-        0
-    } else {
-        1
-    }
 }

@@ -20,3 +20,4 @@ PROVIDE(_abt_stack_size = 16K);
 PROVIDE(_irq_stack_size = 64);
 PROVIDE(_fiq_stack_size = 64);
 PROVIDE(_sys_stack_size = 16K);
+PROVIDE(_pack_stacks = 1);
