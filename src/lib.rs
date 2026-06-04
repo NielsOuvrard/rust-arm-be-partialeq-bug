@@ -28,7 +28,6 @@ static IN_EXIT: portable_atomic::AtomicBool = portable_atomic::AtomicBool::new(f
 #[panic_handler]
 #[cfg(target_os = "none")]
 fn panic(info: &core::panic::PanicInfo) -> ! {
-    semihosting::println!("PANIC: {:#?}", info);
     if WANT_PANIC.load(portable_atomic::Ordering::Relaxed) {
         exit(0);
     } else {
@@ -60,9 +59,6 @@ pub fn init() {
 
 /// Exit from QEMU with code
 pub fn exit(code: i32) -> ! {
-    if !IN_EXIT.swap(true, portable_atomic::Ordering::Relaxed) {
-        stack_dump();
-    }
     semihosting::process::exit(code)
 }
 
