@@ -1,10 +1,9 @@
 [package]
-name = "qemu_be_error"
+name = "cortex_r5_emul"
 version = "0.1.0"
-edition = "2021" # here 2021 works
+edition = "2024"
 
 [dependencies]
-cortex-r-rt = "0.1"           # startup + vector table
 semihosting = { version = "0.1", features = ["stdio"] }
 panic-halt = "1.0"            # or panic-itimer, panic-semihosting, etc.
 aarch32-rt = "0.3.0"
